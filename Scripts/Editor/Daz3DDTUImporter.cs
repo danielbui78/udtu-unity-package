@@ -19,7 +19,7 @@ namespace Daz3D
         public static bool AutomateMecanimAvatarMappings = true;
         public static bool ReplaceMaterials = true;
         public static bool EnableDForceSupport = false;
-        public static bool UseNewShaders = false;
+        public static bool UseNewShaders = true;
         public static void ResetOptions()
         {
             AutoImportDTUChanges = true;
@@ -28,7 +28,7 @@ namespace Daz3D
             AutomateMecanimAvatarMappings = true;
             ReplaceMaterials = true;
             EnableDForceSupport = false;
-            UseNewShaders = false;
+            UseNewShaders = true;
         }
 
         [Serializable]
