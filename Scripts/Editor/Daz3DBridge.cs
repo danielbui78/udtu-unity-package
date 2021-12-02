@@ -100,6 +100,13 @@ namespace Daz3D
 
         void OnEnable()
         {
+            // If "Assets/Daz3D" folder does not exist, create it...
+			// to prevent uDTU Daz plugin from installing Unity Files
+            if (System.IO.Directory.Exists("Assets/Daz3D") == false)
+            {
+                System.IO.Directory.CreateDirectory("Assets/Daz3D");
+            }
+
 #if USING_HDRP || USING_URP || USING_BUILTIN
 
             // check for to_load file
