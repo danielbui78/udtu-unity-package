@@ -63,12 +63,12 @@ namespace Daz3D
         public static void AddDiffusionProfilePrompt()
         {
 #if USING_HDRP
-            if (System.IO.File.Exists("Assets/Daz3D/Resources/do_once.cfg"))
+            if (System.IO.File.Exists("Assets/Daz3D/do_once.cfg"))
             {
                 return;
             }
             byte[] buffer = { 0 };
-            System.IO.File.WriteAllBytes("Assets/Daz3D/Resources/do_once.cfg", buffer);
+            System.IO.File.WriteAllBytes("Assets/Daz3D/do_once.cfg", buffer);
 
 
             string diffusionProfileSettingsPath = "Project/HDRP Default Settings";
@@ -103,15 +103,15 @@ namespace Daz3D
 #if USING_HDRP || USING_URP || USING_BUILTIN
 
             // check for to_load file
-            if (System.IO.File.Exists("Assets/Daz3D/Resources/dtu_toload.txt"))
+            if (System.IO.File.Exists("Assets/Daz3D/dtu_toload.txt"))
             {
-                byte[] byteBuffer = System.IO.File.ReadAllBytes("Assets/Daz3D/Resources/dtu_toload.txt");
+                byte[] byteBuffer = System.IO.File.ReadAllBytes("Assets/Daz3D/dtu_toload.txt");
                 if (byteBuffer != null || byteBuffer.Length > 0)
                 {
                     string dtuPath = System.Text.Encoding.UTF8.GetString(byteBuffer);
 
-                    System.IO.File.Delete("Assets/Daz3D/Resources/dtu_toload.txt");
-                    System.IO.File.Delete("Assets/Daz3D/Resources/dtu_toload.txt.meta");
+                    System.IO.File.Delete("Assets/Daz3D/dtu_toload.txt");
+                    System.IO.File.Delete("Assets/Daz3D/dtu_toload.txt.meta");
 
                     if (System.IO.File.Exists(dtuPath))
                     {

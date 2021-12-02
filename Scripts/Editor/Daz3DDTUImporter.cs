@@ -224,7 +224,7 @@ namespace Daz3D
                 // DB: Write path of asset to be imported in temporary file,
                 //     this will be restored and continued after global script recompilation takes place.
                 byte[] buffer = System.Text.Encoding.UTF8.GetBytes(dtuPath);
-                System.IO.File.WriteAllBytes("Assets/Daz3D/Resources/dtu_toload.txt", buffer);
+                System.IO.File.WriteAllBytes("Assets/Daz3D/dtu_toload.txt", buffer);
                 
                 yield return new WaitForEndOfFrame();
 
