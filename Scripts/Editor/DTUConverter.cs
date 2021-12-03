@@ -573,6 +573,26 @@ namespace Daz3D
 			var glossySpecular = dtuMaterial.Get("Glossy Specular");
 			var glossiness = dtuMaterial.Get("Glossiness");
 			var anisotropy = dtuMaterial.Get("Glossy Anisotropy");
+
+			// Per Iray Shader Documentation: http://docs.daz3d.com/doku.php/public/software/dazstudio/4/referenceguide/interface/panes/surfaces/shaders/iray_uber_shader/shader_general_concepts/start#glossy_anisotropy_rotations
+			// Glossy Anisotropy Rotations: This controls the rotation of the anisotropic effects.
+			// Its values range from 0.0 to 1.0 with the value of 1.0 equating a full rotation of 360°
+			var glossyAnisotropyRotations = dtuMaterial.Get("Glossy Anisotropy Rotations", new DTUValue(0.0f));
+			// DB 2021-12-03: Use glossyAnisotropyRotations to fake rotation
+			// Note: only faking for numeric roughness, does not work for roughness value from texture
+			// After faking rotation, scale rotated value using Glossy Anisotropy is strength
+			float rotationModifier = glossyAnisotropyRotations.Float * 2.0f;
+			// if rotationModifier > 1, then invert the value so that it approaches 0 at max value (2.0)
+			if (rotationModifier > 1.0f) rotationModifier = 2.0f - rotationModifier;
+
+			float rotatedRoughness = glossyRoughness.Float + rotationModifier;
+			if (rotatedRoughness > 1.0f) rotatedRoughness = 2.0f - rotatedRoughness;
+			rotatedRoughness = anisotropy.Float * rotatedRoughness + (1 - anisotropy.Float) * glossyRoughness.Float;
+
+			float rotatedGlossiness = glossiness.Float + rotationModifier;
+			if (rotatedGlossiness > 1.0f) rotatedGlossiness = 2.0f - rotatedGlossiness;
+			rotatedGlossiness = anisotropy.Float * rotatedGlossiness + (1 - anisotropy.Float) * glossiness.Float;
+
 			var refractionIndex = dtuMaterial.Get("Refraction Index");
 			var refractionWeight = dtuMaterial.Get("Refraction Weight");
 			var refractionRoughness = dtuMaterial.Get("Refraction Roughness");
@@ -803,8 +823,11 @@ namespace Daz3D
 				mat.SetFloat("_Alpha", cutoutOpacity.Float);
 				mat.SetTexture("_AlphaMap", ImportTextureFromPath(cutoutOpacity.Texture, materialDir, record, false, true));
 #endif
+
 				mat.SetTexture("_GlossyRoughnessMap",ImportTextureFromPath(glossyRoughness.Texture,materialDir, record, false, true));
-				mat.SetFloat("_GlossyRoughness",glossyRoughness.Float);
+//				mat.SetFloat("_GlossyRoughness",glossyRoughness.Float);
+				mat.SetFloat("_GlossyRoughness",rotatedRoughness); // faked Glossy Anisotropy Rotations (see above)
+
 				Color specularColor = Color.black;
 				if(baseMixing == DTUBaseMixing.PBRSpecularGlossiness)
 				{
@@ -820,7 +843,7 @@ namespace Daz3D
 #if USING_HDRP
 				mat.SetFloat("_AlphaClip",0.33f);
 #elif USING_URP
-				mat.SetFloat("_AlphaClipThreshold", 0.33f);
+				mat.SetFloat("_AlphaClipThreshold", 0.8f);
 #elif USING_BUILTIN
 				mat.SetFloat("_AlphaClipThreshold", 0.025f);
 #endif
@@ -842,7 +865,7 @@ namespace Daz3D
 				mat.SetTexture("_HeightMap",ImportTextureFromPath(bumpStrength.Texture,materialDir, record, false,true));
 				mat.SetFloat("_HeightOffset",0.25f);
 			}
-			else
+			else // custom material handling
 			{
 				////this means we're either skin, metal, spec, etc...
 
@@ -1027,7 +1050,8 @@ namespace Daz3D
 				// DB 2021-09-07: The code block below overrides some or all of the code block above.
 				//   I don't know if the intention was to have the section below replace the one above
 				//   or to do something else entirely.
-				glossyRoughnessValue = glossyRoughness.Float;
+//				glossyRoughnessValue = glossyRoughness.Float;
+				glossyRoughnessValue = rotatedRoughness; // faked Glossy Anisotropy Rotations (see above)
 				if (glossyRoughness.TextureExists())
 				{
 					glossyRoughessMap = ImportTextureFromPath(glossyRoughness.Texture, materialDir, record, false, true);
@@ -1043,7 +1067,8 @@ namespace Daz3D
 						break;
 					case DTUBaseMixing.PBRSpecularGlossiness:
 						mat.EnableKeyword("ROUGHNESS_IS_SMOOTHNESS_ON");
-						glossyRoughnessValue = glossiness.Float;
+//						glossyRoughnessValue = glossiness.Float;
+						glossyRoughnessValue = rotatedGlossiness; // faked Glossy Anisotropy Rotations (see above)
 						if (glossyRoughness.TextureExists())
                         {
 							glossyRoughessMap = ImportTextureFromPath(glossiness.Texture, materialDir, record, false, true);
@@ -1716,7 +1741,6 @@ namespace Daz3D
 				mat.SetFloat("_HeightOffset",0.25f);
 				mat.SetTexture("_CutoutOpacityMap",ImportTextureFromPath(opacityStrength.Texture,materialDir, record, false, true));
 
-				mat.SetFloat("_ROUGHNESS_IS_SMOOTHNESS", 1.0f);
 				mat.SetTexture("_GlossyRoughnessMap",ImportTextureFromPath(glossiness.Texture,materialDir, record, false, true));
 				if (glossiness.Float > 0.60f)
 					mat.SetFloat("_GlossyRoughness", glossiness.Float - 0.25f);
@@ -1730,8 +1754,10 @@ namespace Daz3D
 				mat.SetFloat("_AlphaOffset",0.25f);
 #if USING_HDRP
 				mat.SetFloat("_AlphaClip",0.33f);
-#else
-				mat.SetFloat("_AlphaClipThreshold", 0.33f);
+#elif USING_URP
+				mat.SetFloat("_AlphaClipThreshold", 0.8f);
+#elif USING_BUILTIN
+				mat.SetFloat("_AlphaClipThreshold", 0.025f);
 #endif
 				mat.SetFloat("_AlphaPower",1.0f);
 			}
@@ -1806,8 +1832,10 @@ namespace Daz3D
 			ToggleCommonMaterialProperties(ref mat,matNameLower,isTransparent,isDoubleSided, hasDualLobeSpecularWeight, hasDualLobeSpecularReflectivity,sortingPriority,hasGlossyLayeredWeight,hasGlossyColor);
 
 
+			// DB 2021-12-03: ROUGHNESS_IS_SMOOTHNESS_ON does not seem to work (at least for hair)
 			//omUberSurface is a glossiness/smoothness shader, not roughness, so we need to flip
-			mat.EnableKeyword("ROUGHNESS_IS_SMOOTHNESS_ON");
+			if (isHair == false)
+				mat.EnableKeyword("ROUGHNESS_IS_SMOOTHNESS_ON");
 
 			if (record.Tokens.Count > 0)
 			{
@@ -1909,14 +1937,16 @@ namespace Daz3D
 			mat.SetColor("_SpecularColorSecondary",hairTipColor.Color);
 
 			//A few magic values that work for most hairs
-			mat.SetFloat("_AlphaStrength",1.5f);
-			mat.SetFloat("_AlphaOffset",0.35f);
+			mat.SetFloat("_AlphaStrength",1.2f);
+			mat.SetFloat("_AlphaOffset",0.25f);
 #if USING_HDRP
 			mat.SetFloat("_AlphaClip",0.75f);
-#else
-			mat.SetFloat("_AlphaClipThreshold", 0.75f);
+#elif USING_URP
+			mat.SetFloat("_AlphaClipThreshold", 0.8f);
+#elif USING_BUILTIN
+			mat.SetFloat("_AlphaClipThreshold", 0.025f);
 #endif
-			mat.SetFloat("_AlphaPower",0.4f);
+			mat.SetFloat("_AlphaPower",1.0f);
 
 
 			bool hasDualLobeSpecularWeight = false;
@@ -2041,14 +2071,16 @@ namespace Daz3D
 			mat.SetColor("_SpecularColor",glossyColor.Color);
 
 			//A few magic values that work for most hairs
-			mat.SetFloat("_AlphaStrength",1.5f);
-			mat.SetFloat("_AlphaOffset",0.35f);
+			mat.SetFloat("_AlphaStrength",1.2f);
+			mat.SetFloat("_AlphaOffset",0.25f);
 #if USING_HDRP
 			mat.SetFloat("_AlphaClip",0.75f);
-#else
-			mat.SetFloat("_AlphaClipThreshold", 0.75f);
+#elif USING_URP
+			mat.SetFloat("_AlphaClipThreshold", 0.8f);
+#elif USING_BUILTIN
+			mat.SetFloat("_AlphaClipThreshold", 0.025f);
 #endif
-			mat.SetFloat("_AlphaPower",0.4f);
+			mat.SetFloat("_AlphaPower",1.0f);
 
 
 			bool hasDualLobeSpecularWeight = false;
