@@ -290,7 +290,7 @@ namespace Daz3D
             GUILayout.Space(12);
             Daz3DDTUImporter.EnableDForceSupport = GUILayout.Toggle(Daz3DDTUImporter.EnableDForceSupport, "Enable dForce support (experimental)", bigStyle);
 #if USING_HDRP || USING_URP
-            Daz3DDTUImporter.UseNewShaders = GUILayout.Toggle(Daz3DDTUImporter.UseNewShaders, "Use New Shaders (experimental)", bigStyle);
+            Daz3DDTUImporter.UseNewShaders = GUILayout.Toggle(Daz3DDTUImporter.UseNewShaders, "Use New Shaders", bigStyle);
 #else
             GUILayout.Label("New Shaders only available for HDRP and URP", bigStyle);
             Daz3DDTUImporter.UseNewShaders = false;            
