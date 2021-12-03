@@ -327,7 +327,7 @@ namespace Daz3D
 				{
 					UnityEngine.Debug.LogWarning("Material is both double sided and transparent, you will have rendering artifacts against the two sides where they are alphad, for mat: " + mat.name);
 					mat.SetFloat("_ZWrite",1f);
-					mat.SetFloat("_TransparentZWrite",1f);
+//					mat.SetFloat("_TransparentZWrite",1f);
 				}
 
 				mat.EnableKeyword("_DOUBLESIDED_ON");
@@ -787,7 +787,10 @@ namespace Daz3D
 				mat.SetColor("_Diffuse",diffuseColor.Color);
 				mat.SetTexture("_DiffuseMap",ImportTextureFromPath(diffuseColor.Texture,materialDir, record));
 				mat.SetTexture("_NormalMap",ImportTextureFromPath(normalMap.Texture,materialDir, record, true));
-				mat.SetFloat("_NormalStrength",normalMap.Float);
+				if (normalMap.Texture == "")
+					mat.SetFloat("_NormalStrength", 0.5f);
+				else
+					mat.SetFloat("_NormalStrength", normalMap.Float);
 				mat.SetFloat("_Height",bumpStrength.Float);
 				mat.SetTexture("_HeightMap",ImportTextureFromPath(bumpStrength.Texture,materialDir, record, false, true));
 				mat.SetFloat("_HeightOffset",0.25f);
@@ -809,16 +812,16 @@ namespace Daz3D
 				mat.SetColor("_SpecularColor",specularColor);
 
 				//A few magic values that work for most hairs
-				mat.SetFloat("_AlphaStrength",1.5f);
-				mat.SetFloat("_AlphaOffset",0.35f);
+				mat.SetFloat("_AlphaStrength",1.2f);
+				mat.SetFloat("_AlphaOffset",0.25f);
 #if USING_HDRP
-				mat.SetFloat("_AlphaClip",0.75f);
+				mat.SetFloat("_AlphaClip",0.33f);
 #elif USING_URP
-				mat.SetFloat("_AlphaClipThreshold", 0.75f);
+				mat.SetFloat("_AlphaClipThreshold", 0.33f);
 #elif USING_BUILTIN
 				mat.SetFloat("_AlphaClipThreshold", 0.025f);
 #endif
-				mat.SetFloat("_AlphaPower",0.4f);
+				mat.SetFloat("_AlphaPower",1.0f);
 			}
 			else if(isWet)
 			{
@@ -1684,26 +1687,33 @@ namespace Daz3D
 				mat.SetColor("_Diffuse",diffuseColor.Color);
 				mat.SetTexture("_DiffuseMap",ImportTextureFromPath(diffuseColor.Texture,materialDir, record));
 				mat.SetTexture("_NormalMap",ImportTextureFromPath(normalMap.Texture,materialDir, record, true));
-				mat.SetFloat("_NormalStrength",normalMap.Float);
+				if (normalMap.Texture == "")
+					mat.SetFloat("_NormalStrength", 0.5f);
+				else
+					mat.SetFloat("_NormalStrength",normalMap.Float);
 				mat.SetFloat("_Height",bumpStrength.Float);
 				mat.SetTexture("_HeightMap",ImportTextureFromPath(bumpStrength.Texture,materialDir, record, false, true));
 				mat.SetFloat("_HeightOffset",0.25f);
 				mat.SetTexture("_CutoutOpacityMap",ImportTextureFromPath(opacityStrength.Texture,materialDir, record, false, true));
 
+				mat.SetFloat("_ROUGHNESS_IS_SMOOTHNESS", 1.0f);
 				mat.SetTexture("_GlossyRoughnessMap",ImportTextureFromPath(glossiness.Texture,materialDir, record, false, true));
-				mat.SetFloat("_GlossyRoughness",glossiness.Float);
+				if (glossiness.Float > 0.60f)
+					mat.SetFloat("_GlossyRoughness", glossiness.Float - 0.25f);
+				else
+					mat.SetFloat("_GlossyRoughness", glossiness.Float);
 
 				mat.SetColor("_SpecularColor",specularColor.Color);
 
 				//A few magic values that work for most hairs
-				mat.SetFloat("_AlphaStrength",1.5f);
-				mat.SetFloat("_AlphaOffset",0.35f);
+				mat.SetFloat("_AlphaStrength",1.2f);
+				mat.SetFloat("_AlphaOffset",0.25f);
 #if USING_HDRP
-				mat.SetFloat("_AlphaClip",0.75f);
+				mat.SetFloat("_AlphaClip",0.33f);
 #else
-				mat.SetFloat("_AlphaClipThreshold", 0.75f);
+				mat.SetFloat("_AlphaClipThreshold", 0.33f);
 #endif
-				mat.SetFloat("_AlphaPower",0.4f);
+				mat.SetFloat("_AlphaPower",1.0f);
 			}
 			else if(isWet)
 			{
