@@ -673,7 +673,10 @@ namespace Daz3D
 
 			if(isHair)
 			{
-				shaderName = DTU_Constants.shaderNameHair;
+				if (Daz3DDTUImporter.UseNewShaders)
+					shaderName = DTU_Constants.newShaderNameBase + "Hair";
+				else
+					shaderName = DTU_Constants.shaderNameHair;
 			}
 			else if(isSkin)
 			{
@@ -1266,10 +1269,16 @@ namespace Daz3D
 			switch(shaderLightingModel)
 			{
 				case DTULightingModel.Skin:
-					shaderName = DTU_Constants.shaderNameIraySkin;
+					if (Daz3DDTUImporter.UseNewShaders)
+						shaderName = DTU_Constants.newShaderNameBase + "SSS";
+					else
+						shaderName = DTU_Constants.shaderNameIraySkin;
 					break;
 				default:
-					shaderName = DTU_Constants.shaderNameSpecular;
+					if (Daz3DDTUImporter.UseNewShaders)
+						shaderName = DTU_Constants.newShaderNameBase + "Specular";
+					else
+						shaderName = DTU_Constants.shaderNameSpecular;
 					break;
 			}
 
@@ -1447,8 +1456,10 @@ namespace Daz3D
 			var uvSet = dtuMaterial.Get("UV Set");
 
 			var shaderName = DTU_Constants.shaderNameMetal;
+			if (Daz3DDTUImporter.UseNewShaders)
+				shaderName = DTU_Constants.newShaderNameBase + "Metallic";
 
-			var shader = Shader.Find(shaderName);
+				var shader = Shader.Find(shaderName);
 			if(shader == null)
 			{
 				UnityEngine.Debug.LogError("Failed to locate shader: " + shaderName + " for mat: " + dtuMaterial.MaterialName);
@@ -1627,15 +1638,24 @@ namespace Daz3D
 
 			//this shader uses specular workflow, so we'll match with it
 			var shaderName = DTU_Constants.shaderNameSpecular;
-
+			if (Daz3DDTUImporter.UseNewShaders)
+			{
+				shaderName = DTU_Constants.newShaderNameBase + "Specular";
+			}
 
 			if(isHair)
 			{
-				shaderName = DTU_Constants.shaderNameHair;
+				if (Daz3DDTUImporter.UseNewShaders)
+					shaderName = DTU_Constants.newShaderNameBase + "Hair";
+				else
+					shaderName = DTU_Constants.shaderNameHair;
 			}
 			else if(isSkin)
 			{
-				shaderName = DTU_Constants.shaderNameIraySkin;
+				if (Daz3DDTUImporter.UseNewShaders)
+					shaderName = DTU_Constants.newShaderNameBase + "SSS";
+				else
+					shaderName = DTU_Constants.shaderNameIraySkin;
 				isDoubleSided = false;
 				isTransparent = false;
 				isTranslucent = true;
@@ -1845,7 +1865,10 @@ namespace Daz3D
 			var valueLower = dtuMaterial.Value.ToLower();
 
 			string shaderName = DTU_Constants.shaderNameHair;
-			var shader = Shader.Find(shaderName);
+			if (Daz3DDTUImporter.UseNewShaders)
+				shaderName = DTU_Constants.newShaderNameBase + "Hair";
+
+				var shader = Shader.Find(shaderName);
 			if(shader == null)
 			{
 				UnityEngine.Debug.LogError("Failed to locate shader: " + shaderName + " for mat: " + dtuMaterial.MaterialName);
@@ -1983,7 +2006,10 @@ namespace Daz3D
 			var valueLower = dtuMaterial.Value.ToLower();
 
 			string shaderName = DTU_Constants.shaderNameHair;
-			var shader = Shader.Find(shaderName);
+			if (Daz3DDTUImporter.UseNewShaders)
+				shaderName = DTU_Constants.newShaderNameBase + "Hair";
+
+				var shader = Shader.Find(shaderName);
 			if(shader == null)
 			{
 				UnityEngine.Debug.LogError("Failed to locate shader: " + shaderName + " for mat: " + dtuMaterial.MaterialName);
