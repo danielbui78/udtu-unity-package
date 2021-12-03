@@ -28,7 +28,10 @@ This Unity Package should be installed from the Unity Package Manager:
 4. Wait for the "Unofficial DTU Bridge" package to be installed.
 5. Select "In Project" from dropdown button next to the "+" button.
 6. "Unofficial DTU Bridge" should now show up in the "Other" section above "Unity Technologies".
-7. Once the Unity Package is installed, be sure to follow directions below to add the IrayUberSkinDiffusionProfile if you are using HDRP.
+7. Once the Unity Package is installed, select the main menu option Daz3D -> "Open DazToUnity Bridge window".
+8. Select the "Options" tab. If the text line at the bottom reads: "RenderPipeline Not Detected", click "Redetect RenderPipeline".
+9. Select "Yes" to update the Symbol Definitions.  Then wait for the scripts to recompile.  This may take several minutes.
+10. Once the RenderPipeline is configured, be sure to follow directions below to add the IrayUberSkinDiffusionProfile if you are using HDRP.
 
 
 HDRP-ONLY: Adding HDRP Diffusion Profile (aka subsurface-scattering):
@@ -89,4 +92,3 @@ Tips: if clothing falls off or explodes, try decreasing the Dynamics Strength in
 Copyright Notice:
 ==========
 This product is based on software by DAZ 3D, Inc. Copyright 2002-2021 DAZ 3D, Inc., used under modified Apache 2.0 License.  All rights reserved.
-
