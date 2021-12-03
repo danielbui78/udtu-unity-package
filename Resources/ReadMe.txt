@@ -1,10 +1,14 @@
-Unofficial DTU Bridge, Unity Package version 1.3 alpha 1
+Unofficial DTU Bridge, Unity Package version 1.3 alpha 2
+====================
 
 This the Unity Package for Unofficial DTU Bridge, an unofficial update project for the opensource Daz To Unity Bridge released by Daz3D.  It contains a number of bugfixes and feature additions not yet incorporated in the official Daz To Unity project.
 
 New in this version:
 ====================
-- The Unity Package is now separated from the Daz Studio Plugin.
+- The Unity Package is now separate from the Daz Studio Plugin.
+- You will need to delete any existing DTU plugin from "Assets/Daz3D" folder.  You can save your previous exported assets.
+- UseNewShaders is now enabled by default.
+- Added improved Hair shaders for HDRP and URP.
 
 
 Known Issues:
@@ -22,16 +26,17 @@ Known Issues:
 Installation Instructions:
 ==========================
 This Unity Package should be installed from the Unity Package Manager:
-1. In Unity, select the main menu option Window -> Package Manager.
-2. Click the "+" button and select "Add package from git URL".
-3. Paste https://github.com/danielbui78/udtu-unity-package.git into the text field and click the "Add" button.
-4. Wait for the "Unofficial DTU Bridge" package to be installed.
-5. Select "In Project" from dropdown button next to the "+" button.
-6. "Unofficial DTU Bridge" should now show up in the "Other" section above "Unity Technologies".
-7. Once the Unity Package is installed, select the main menu option Daz3D -> "Open DazToUnity Bridge window".
-8. Select the "Options" tab. If the text line at the bottom reads: "RenderPipeline Not Detected", click "Redetect RenderPipeline".
-9. Select "Yes" to update the Symbol Definitions.  Then wait for the scripts to recompile.  This may take several minutes.
-10. Once the RenderPipeline is configured, be sure to follow directions below to add the IrayUberSkinDiffusionProfile if you are using HDRP.
+1. You will need to delete any existing DTU plugin from "Assets/Daz3D" folder.  You can save your previous exported assets.
+2. In Unity, select the main menu option Window -> Package Manager.
+3. Click the "+" button and select "Add package from git URL".
+4. Paste `https://github.com/danielbui78/udtu-unity-package.git` into the text field and click the "Add" button.
+5. Wait for the "Unofficial DTU Bridge" package to be installed.
+6. Select "In Project" from dropdown button next to the "+" button.
+7. "Unofficial DTU Bridge" should now show up in the "Other" section above "Unity Technologies".
+8. Once the Unity Package is installed, select the main menu option Daz3D -> "Open DazToUnity Bridge window".
+9. Select the "Options" tab. If the text line at the bottom reads: "RenderPipeline Not Detected", click "Redetect RenderPipeline".
+10. Select the option to Update the Symbol Definitions.  Then wait for the scripts to recompile.  This may take several minutes.
+11. Once the RenderPipeline is configured, be sure to follow directions below to add the IrayUberSkinDiffusionProfile if you are using HDRP.
 
 
 HDRP-ONLY: Adding HDRP Diffusion Profile (aka subsurface-scattering):
@@ -57,14 +62,14 @@ To Test dForce Clothing to Unity Cloth Physics support:
 =======================================================
 *Make sure you save your DazStudio project before taking these steps, some will Not revert with Undo command.*
 *Preparation:*
-0. In the Unity Editor, open the Unofficial DTU Bridge window.  Go to the Options tab.  Make sure the "Enable dForce Support" option is checked on.  Close the Unofficial DTU Bridge window.  Switch to Daz Studio.
-1. Load dForce compliant clothing onto your figure.
-2. Clear any dForce simulation calculations in the scene by selecting the Simulations Settings Pane and clicking "Clear".  Warning: you will NOT be able to undo this procedure.
-3. Select the Surfaces Pane and select the clothing surface materials.  For each material, double-check the Simulation Properties Tab to make sure that Dynamics Strength is set correctly: a value of 1.00 will often cause clothing to fall off or explode in Unity.  Try setting this to 0.5 if this happens.
-4. Recommend setting one Material's Dynamics Strength to 0.2 or less, to act as an anchor for the rest of the clothing -- example: waist-line of pants and skirts, neck-line of shirts and jackets.
-5. With dForce Clothing still selected, add a Push Modifier via the "Edit->Object->Geometry->Add Push Modifier..." menu command.  This will add a new property in the Parameters Pane called "PushModifier" in the "Mesh Offset" Property Group.  Try 0.1 as an initial value.  It can be increased if you are having cloth collision issues such as clothes exploding.
-6. Select "File->Send To->Unofficial Daz to Unity Bridge".
-7. Open Unity Editor window and wait for DTU import to complete and Prefab to be created in the Scene.
+1. In the Unity Editor, open the Unofficial DTU Bridge window.  Go to the Options tab.  Make sure the "Enable dForce Support" option is checked on.  Close the Unofficial DTU Bridge window.  Switch to Daz Studio.
+2. Load dForce compliant clothing onto your figure.
+3. Clear any dForce simulation calculations in the scene by selecting the Simulations Settings Pane and clicking "Clear".  Warning: you will NOT be able to undo this procedure.
+4. Select the Surfaces Pane and select the clothing surface materials.  For each material, double-check the Simulation Properties Tab to make sure that Dynamics Strength is set correctly: a value of 1.00 will often cause clothing to fall off or explode in Unity.  Try setting this to 0.5 if this happens.
+5. Recommend setting one Material's Dynamics Strength to 0.2 or less, to act as an anchor for the rest of the clothing -- example: waist-line of pants and skirts, neck-line of shirts and jackets.
+6. With dForce Clothing still selected, add a Push Modifier via the "Edit->Object->Geometry->Add Push Modifier..." menu command.  This will add a new property in the Parameters Pane called "PushModifier" in the "Mesh Offset" Property Group.  Try 0.1 as an initial value.  It can be increased if you are having cloth collision issues such as clothes exploding.
+7. Select "File->Send To->Unofficial Daz to Unity Bridge".
+8. Open Unity Editor window and wait for DTU import to complete and Prefab to be created in the Scene.
 
 *Cloth Colliders:*
 1. In the Scene Pane, open the imported prefab and select the "Cloth Collision Rig".  In the Inspector Pane, you will see the "Cloth Collision Assigner" Script Component.
