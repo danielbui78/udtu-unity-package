@@ -1,4 +1,4 @@
-Unity Package for Unofficial DTU Bridge version 1.3 alpha 1
+Unity Package for uDTU version 1.3 alpha 1
 ====================
 
 
