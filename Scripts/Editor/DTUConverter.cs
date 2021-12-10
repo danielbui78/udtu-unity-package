@@ -1739,8 +1739,12 @@ namespace Daz3D
 				mat.SetFloat("_Height",bumpStrength.Float);
 				mat.SetTexture("_HeightMap",ImportTextureFromPath(bumpStrength.Texture,materialDir, record, false, true));
 				mat.SetFloat("_HeightOffset",0.25f);
+#if USING_HDRP || USING_URP
 				mat.SetTexture("_CutoutOpacityMap",ImportTextureFromPath(opacityStrength.Texture,materialDir, record, false, true));
-
+#elif USING_BUILTIN
+				mat.SetFloat("_Alpha", opacityStrength.Float);
+				mat.SetTexture("_AlphaMap", ImportTextureFromPath(opacityStrength.Texture, materialDir, record, false, true));
+#endif
 				mat.SetTexture("_GlossyRoughnessMap",ImportTextureFromPath(glossiness.Texture,materialDir, record, false, true));
 				if (glossiness.Float > 0.60f)
 					mat.SetFloat("_GlossyRoughness", glossiness.Float - 0.25f);
