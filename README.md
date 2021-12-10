@@ -1,4 +1,4 @@
-Unity Package for uDTU version 1.3 alpha 2
+Unity Package for uDTU version 1.3 alpha 3
 ====================
 
 
@@ -10,6 +10,7 @@ New in this version:
 - You will need to delete any existing DTU plugin from "Assets/Daz3D" folder.  You can save your previous exported assets.
 - UseNewShaders is now enabled by default.
 - Added improved Hair shaders for HDRP and URP.
+- Alpha-value Bugfixes to Hair shaders: OOT, OmUberSurface.
 
 
 Known Issues:
