@@ -845,7 +845,7 @@ namespace Daz3D
 #elif USING_URP
 				mat.SetFloat("_AlphaClipThreshold", 0.8f);
 #elif USING_BUILTIN
-				mat.SetFloat("_AlphaClipThreshold", 0.025f);
+				mat.SetFloat("_AlphaClipThreshold", 0.35f);
 #endif
 				mat.SetFloat("_AlphaPower",1.0f);
 			}
@@ -1757,7 +1757,7 @@ namespace Daz3D
 #elif USING_URP
 				mat.SetFloat("_AlphaClipThreshold", 0.8f);
 #elif USING_BUILTIN
-				mat.SetFloat("_AlphaClipThreshold", 0.025f);
+				mat.SetFloat("_AlphaClipThreshold", 0.35f);
 #endif
 				mat.SetFloat("_AlphaPower",1.0f);
 			}
@@ -1944,7 +1944,7 @@ namespace Daz3D
 #elif USING_URP
 			mat.SetFloat("_AlphaClipThreshold", 0.8f);
 #elif USING_BUILTIN
-			mat.SetFloat("_AlphaClipThreshold", 0.025f);
+			mat.SetFloat("_AlphaClipThreshold", 0.35f);
 #endif
 			mat.SetFloat("_AlphaPower",1.0f);
 
@@ -2063,7 +2063,12 @@ namespace Daz3D
 			mat.SetFloat("_Height",bumpStrength.Float);
 			mat.SetTexture("_HeightMap",ImportTextureFromPath(bumpStrength.Texture,materialDir, record, false, true));
 			mat.SetFloat("_HeightOffset",0.25f);
+#if USING_HDRP || USING_URP
 			mat.SetTexture("_CutoutOpacityMap",ImportTextureFromPath(cutoutOpacity.Texture,materialDir, record, false, true));
+#elif USING_BUILTIN
+			mat.SetFloat("_Alpha", cutoutOpacity.Float);
+			mat.SetTexture("_AlphaMap", ImportTextureFromPath(cutoutOpacity.Texture, materialDir, record, false, true));
+#endif
 			mat.SetTexture("_GlossyRoughnessMap",ImportTextureFromPath(glossyRoughness.Texture,materialDir, record, false, true));
 			mat.SetFloat("_GlossyRoughness",glossyRoughness.Float);
 
@@ -2074,11 +2079,11 @@ namespace Daz3D
 			mat.SetFloat("_AlphaStrength",1.2f);
 			mat.SetFloat("_AlphaOffset",0.25f);
 #if USING_HDRP
-			mat.SetFloat("_AlphaClip",0.75f);
+			mat.SetFloat("_AlphaClip",0.42f);
 #elif USING_URP
-			mat.SetFloat("_AlphaClipThreshold", 0.8f);
+			mat.SetFloat("_AlphaClipThreshold", 0.42f);
 #elif USING_BUILTIN
-			mat.SetFloat("_AlphaClipThreshold", 0.025f);
+			mat.SetFloat("_AlphaClipThreshold", 0.15f);
 #endif
 			mat.SetFloat("_AlphaPower",1.0f);
 
