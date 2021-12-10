@@ -19,7 +19,11 @@ namespace Daz3D
         public static bool AutomateMecanimAvatarMappings = true;
         public static bool ReplaceMaterials = true;
         public static bool EnableDForceSupport = false;
+#if USING_HDRP || USING_URP
         public static bool UseNewShaders = true;
+#else
+        public static bool UseNewShaders = false;
+#endif
         public static void ResetOptions()
         {
             AutoImportDTUChanges = true;
@@ -28,7 +32,11 @@ namespace Daz3D
             AutomateMecanimAvatarMappings = true;
             ReplaceMaterials = true;
             EnableDForceSupport = false;
+#if USING_HDRP || USING_URP
             UseNewShaders = true;
+#else
+            UseNewShaders = false;
+#endif
         }
 
         [Serializable]
