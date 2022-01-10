@@ -35,7 +35,7 @@ This Unity Package should be installed from the Unity Package Manager:
 5. Wait for the "Unofficial DTU Bridge" package to be installed.
 6. Select "In Project" from dropdown button next to the "+" button.
 7. "Unofficial DTU Bridge" should now show up in the "Other" section above "Unity Technologies".
-8. Once the Unity Package is installed, select the main menu option Daz3D -> "Open DazToUnity Bridge window".
+8. Once the Unity Package is installed, select the main menu option Daz3D -> "Open DazToUnity Bridge window". (You may need to close and re-open your project for the Daz3D main menu option to show up.)
 9. Select the "Options" tab. If the text line at the bottom reads: "RenderPipeline Not Detected", click "Redetect RenderPipeline".
 10. Select the option to Update the Symbol Definitions.  Then wait for the scripts to recompile.  This may take several minutes.
 11. Once the RenderPipeline is configured, be sure to follow directions below to add the IrayUberSkinDiffusionProfile if you are using HDRP.
