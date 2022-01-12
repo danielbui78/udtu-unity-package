@@ -6,7 +6,7 @@
  
 void GetLightDirection_float(out float3 lightDir, out float3 lightColor)
 {
-#if SHADERGRAPH_PREVIEW
+#ifdef SHADERGRAPH_PREVIEW
     lightDir = float3(0.707, 0.707, 0);
     lightColor = 1;
 #else

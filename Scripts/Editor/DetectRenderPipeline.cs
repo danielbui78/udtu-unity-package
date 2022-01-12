@@ -135,7 +135,7 @@ public static class DetectRenderPipeline
 			Daz3D.Daz3DBridge.CurrentToolbarMode = Daz3D.Daz3DBridge.ToolbarMode.Options;
 			string dtu_detectrp_message = "Detected [" + renderPipelineString + "]\n\nDTU Bridge must update symbol definitions to continue the Import Procedure.  This may take a few minutes.  " +
 				"You may Cancel now, and rerun the renderpipeline detection process from the DTU Bridge at another time.";
-			bool bUpdateSymbols = EditorUtility.DisplayDialog("Unofficial DTU RenderPipeline Detection", dtu_detectrp_message, "Update Symbol Definitions Now", "Cancel and Redetect RenderPipeline Later");
+			bool bUpdateSymbols = EditorUtility.DisplayDialog("RenderPipeline Detection", dtu_detectrp_message, "Update Symbol Definitions Now", "Cancel and Redetect RenderPipeline Later");
 			if (bUpdateSymbols)
             {
 				Daz3D.Daz3DBridge.CurrentToolbarMode = Daz3D.Daz3DBridge.ToolbarMode.History;
@@ -155,7 +155,7 @@ public static class DetectRenderPipeline
         else
         {
 			string dtu_detectrp_message = "Detected [" + renderPipelineString + "]\n\nNo changes need to be made to Symbol Definitions.";
-			EditorUtility.DisplayDialog("Unofficial DTU RenderPipeline Detection", dtu_detectrp_message, "OK");
+			EditorUtility.DisplayDialog("RenderPipeline Detection", dtu_detectrp_message, "OK");
 		}
 
 	}

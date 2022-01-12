@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#define USING_HDRP
+
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEditor;
@@ -13,7 +15,7 @@ namespace Daz3D
 		public const string shaderNameIraySkin = "Daz3D/IrayUberSkin";
 		public const string shaderNameHair = "Daz3D/Hair";
 		public const string shaderNameWet = "Daz3D/Wet";
-		public const string newShaderNameBase = "Daz3D/Unofficial DTU/uDTU HDRP.";
+		public const string newShaderNameBase = "Daz3D/uDTU HDRP.";
 #elif USING_URP
 		public const string shaderNameMetal = "Daz3D/URP IrayUberMetal";
 		public const string shaderNameSpecular = "Daz3D/URP IrayUberSpec";
@@ -70,6 +72,8 @@ namespace Daz3D
 		public string AssetID;
 		public string AssetName;
 		public string AssetType;
+		public string ProductName;
+		public string ProductComponentName;
 		public string FBXFile;
 		public string ImportFolder;
 		public List<DTUMaterial> Materials;
@@ -2548,6 +2552,8 @@ namespace Daz3D
 			dtu.AssetID = root["Asset Id"].Value;
 			dtu.AssetName = root["Asset Name"].Value;
 			dtu.AssetType = root["Asset Type"].Value;
+			dtu.ProductName = root["Product Name"].Value;
+			dtu.ProductComponentName = root["Product Component Name"].Value;
 			dtu.FBXFile = root["FBX File"].Value;
 			dtu.ImportFolder = root["Import Folder"].Value;
 			dtu.Materials = new List<DTUMaterial>();
@@ -2560,7 +2566,12 @@ namespace Daz3D
 				var dtuMat = new DTUMaterial();
 
 				dtuMat.Version = mat["Version"].AsFloat;
-				dtuMat.AssetName = mat["Asset Name"].Value;
+				if (dtu.ProductComponentName != "")
+					dtuMat.AssetName = dtu.ProductComponentName;
+				else if (dtu.ProductName != "")
+					dtuMat.AssetName = dtu.ProductName;
+				else
+					dtuMat.AssetName = mat["Asset Name"].Value;
 				dtuMat.MaterialName = mat["Material Name"].Value;
 				dtuMat.MaterialType = mat["Material Type"].Value;
 				dtuMat.Value = mat["Value"].Value;

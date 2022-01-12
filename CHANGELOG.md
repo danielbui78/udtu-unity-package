@@ -1,4 +1,14 @@
-Change Log:
+Batch-Converter-Unity Change Log:
+=================================
+Version 0.1:
+- Initial commit.
+- Checks for Autoexec-jobpool.txt and enters batch conversion mode.
+- Hardcoded for uDTU HDRP shaders.
+
+
+
+
+uDTU Change Log:
 ===========
 Version 1.3 alpha 1:
 - The Unity Package is now separated from the Daz Studio Plugin.
@@ -54,4 +64,3 @@ Version 0.3-alpha:
 
 Version 0.1-alpha:
 - Combined support for all three rendering pipelines and an autodetection/configuration system.
-

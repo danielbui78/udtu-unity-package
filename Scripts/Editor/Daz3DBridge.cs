@@ -1,8 +1,8 @@
-﻿using UnityEngine;
+﻿#define USING_HDRP
+
+using UnityEngine;
 using UnityEditor;
 using System;
-
-
 
 
 namespace Daz3D
@@ -13,8 +13,137 @@ namespace Daz3D
     /// <summary>
     /// An editor window where unity user can monitor the progress and history and details of DTU import activity 
     /// </summary>
+    [InitializeOnLoad]
     public class Daz3DBridge : EditorWindow
     {
+
+        public static int BatchConversionMode = 0;
+        public static bool ReadyToImport = false;
+
+        static Daz3DBridge()
+        {
+            EditorApplication.delayCall += AutoexecBridge;
+        }
+
+        static void AutoexecBridge()
+        {
+            // If "Assets/Daz3D" folder does not exist, create it...
+            // to prevent uDTU Daz plugin from installing Unity Files
+            if (System.IO.Directory.Exists("Assets/Daz3D") == false)
+            {
+                System.IO.Directory.CreateDirectory("Assets/Daz3D");
+            }
+
+            // 1. Look for autoexec-jobpool.txt
+            if (System.IO.File.Exists("autoexec-jobpool.txt") && BatchConversionMode == 0)
+            {
+                Debug.Log("autoexec-jobpool found.");
+
+                // Suppress GUI and timed Imports
+                BatchConversionMode = 1;
+
+                DazCoroutine.StartCoroutine(JobPool());
+
+            }
+            //ShowWindow();
+            Debug.Log("DazToUnity Bridge initalized and running.");
+
+        }
+
+        static System.Collections.IEnumerator JobPool()
+        {
+            // 2. Read into string array or string list
+            string[] lines = System.IO.File.ReadAllLines("autoexec-jobpool.txt");
+
+            foreach (string line in lines)
+            {
+                // 3. sequentially ImportDTU
+                string dtuPath = line;
+                if (System.IO.File.Exists(dtuPath) && dtuPath.ToLower().Contains(".dtu"))
+                {
+                    // get filename
+                    string dtuFilename = System.IO.Path.GetFileName(dtuPath);
+
+                    // get container folder
+                    var sourcePath = System.IO.Path.GetDirectoryName(dtuPath);
+                    var foldername = System.IO.Path.GetFileName(sourcePath);
+                    var localPath = "Assets/BatchConversions/" + foldername;
+
+                    // create locally in assets if not exists
+                    if (System.IO.Directory.Exists(localPath) == false)
+                    {
+                        System.IO.Directory.CreateDirectory(localPath);
+                    }
+                    if (System.IO.File.Exists(localPath + "/" + dtuFilename) == false)
+                    {
+                        // copy DTU to local container
+                        System.IO.File.Copy(sourcePath + "/" + dtuFilename, localPath + "/" + dtuFilename);
+                        Debug.Log("DTU copied to: " + localPath + "/" + dtuFilename);
+                    }
+                    // retrieve FBX file path
+                    var text = System.IO.File.ReadAllText(localPath + "/" + dtuFilename);
+                    var root = SimpleJSON.JSON.Parse(text);
+                    var fbxSourcePath = root["FBX File"].Value;
+                    var fbxFilename = System.IO.Path.GetFileName(fbxSourcePath);
+                    if (System.IO.File.Exists(localPath + "/" + fbxFilename) == false)
+                    {
+                        // copy FBX to local container
+                        System.IO.File.Copy(fbxSourcePath, localPath + "/" + fbxFilename);
+                        Debug.Log("FBX copied to: " + localPath + "/" + fbxFilename);
+                    }
+
+                    // importDTU
+                    ReadyToImport = false;
+                    Daz3DDTUImporter.Import(localPath + "/" + dtuFilename, localPath + "/" + fbxFilename);
+
+                    while (!ReadyToImport)
+                    {
+                        yield return new WaitForEndOfFrame();
+                    }
+                }
+
+            }
+
+            Daz3DBridge.BatchConversionMode = -1;
+            Debug.Log("Batch Conversions Complete.");
+//            yield break;
+            EditorApplication.SaveScene(EditorApplication.currentScene);
+            EditorApplication.Exit(0);
+        }
+
+        static void AutoImport()
+        {
+#if USING_HDRP || USING_URP || USING_BUILTIN
+        // check for to_load file
+        if (System.IO.File.Exists("Assets/Daz3D/dtu_toload.txt"))
+        {
+            byte[] byteBuffer = System.IO.File.ReadAllBytes("Assets/Daz3D/dtu_toload.txt");
+            if (byteBuffer != null || byteBuffer.Length > 0)
+            {
+                string dtuPath = System.Text.Encoding.UTF8.GetString(byteBuffer);
+
+                System.IO.File.Delete("Assets/Daz3D/dtu_toload.txt");
+                System.IO.File.Delete("Assets/Daz3D/dtu_toload.txt.meta");
+
+                if (System.IO.File.Exists(dtuPath))
+                {
+                    //Debug.LogError("Found file: [" + dtuPath + "] " + dtuPath.Length);
+                    if (dtuPath.Contains(".dtu"))
+                    {
+                        var fbxPath = dtuPath.Replace(".dtu", ".fbx");
+                        Daz3DDTUImporter.Import(dtuPath, fbxPath);
+                    }
+                }
+                else
+                {
+                    //Debug.LogError("File NOT found: [" + dtuPath + "] " + dtuPath.Length);
+                }
+            }
+
+        }
+#endif
+        }
+
 
         private Vector2 _scrollPos;
         //Tuple<UnityEngine.Object, Texture> thumbnail = null;
@@ -49,7 +178,7 @@ namespace Daz3D
         {  
             _instance = (Daz3DBridge)GetWindow(typeof(Daz3DBridge));
 #if USING_HDRP
-            _instance.titleContent = new GUIContent("uDTU: HDRP");
+            _instance.titleContent = new GUIContent("Batch-Converter");
 #elif USING_URP
             _instance.titleContent = new GUIContent("uDTU: URP");
 #elif USING_BUILTIN
@@ -100,44 +229,7 @@ namespace Daz3D
 
         void OnEnable()
         {
-            // If "Assets/Daz3D" folder does not exist, create it...
-			// to prevent uDTU Daz plugin from installing Unity Files
-            if (System.IO.Directory.Exists("Assets/Daz3D") == false)
-            {
-                System.IO.Directory.CreateDirectory("Assets/Daz3D");
-            }
 
-#if USING_HDRP || USING_URP || USING_BUILTIN
-
-            // check for to_load file
-            if (System.IO.File.Exists("Assets/Daz3D/dtu_toload.txt"))
-            {
-                byte[] byteBuffer = System.IO.File.ReadAllBytes("Assets/Daz3D/dtu_toload.txt");
-                if (byteBuffer != null || byteBuffer.Length > 0)
-                {
-                    string dtuPath = System.Text.Encoding.UTF8.GetString(byteBuffer);
-
-                    System.IO.File.Delete("Assets/Daz3D/dtu_toload.txt");
-                    System.IO.File.Delete("Assets/Daz3D/dtu_toload.txt.meta");
-
-                    if (System.IO.File.Exists(dtuPath))
-                    {
-                        //Debug.LogError("Found file: [" + dtuPath + "] " + dtuPath.Length);
-                        if (dtuPath.Contains(".dtu"))
-                        {
-                            var fbxPath = dtuPath.Replace(".dtu", ".fbx");
-                            Daz3DDTUImporter.Import(dtuPath, fbxPath);
-                        }
-                    }
-                    else
-                    {
-                        //Debug.LogError("File NOT found: [" + dtuPath + "] " + dtuPath.Length);
-                    }
-                }
-
-            }
-
-#endif
         }
 
         void Update()
@@ -180,7 +272,7 @@ namespace Daz3D
             GUILayout.BeginHorizontal();
 
             if (masthead == null)
-                masthead = Resources.Load<Texture>("UnofficialDTU_Logo_TextOnly");
+                masthead = Resources.Load<Texture>("Logo");
 
             GUILayout.FlexibleSpace();
             GUILayout.Label(masthead, GUILayout.Height(100));
@@ -302,11 +394,11 @@ namespace Daz3D
 
             GUILayout.Space(24);
 #if USING_HDRP
-            GUILayout.TextArea("Unofficial DTU Configured for HDRP");
+            GUILayout.TextArea("Configured for HDRP");
 #elif USING_URP
-            GUILayout.TextArea("Unofficial DTU Configured for URP");
+            GUILayout.TextArea("Configured for URP");
 #elif USING_BUILTIN
-            GUILayout.TextArea("Unofficial DTU Configured for Built-In Rendering");
+            GUILayout.TextArea("Configured for Built-In Rendering");
 #else
             GUILayout.TextArea("No Renderpipeline configured.  Press Redetect RenderPipeline to configure now.");
 #endif

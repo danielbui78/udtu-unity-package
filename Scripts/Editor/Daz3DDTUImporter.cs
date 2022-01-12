@@ -1,5 +1,7 @@
-﻿using UnityEditor;
-using UnityEditor.Experimental.AssetImporters;
+﻿#define USING_HDRP
+
+using UnityEditor;
+
 using System.Collections.Generic;
 using System;
 using System.Collections;
@@ -10,8 +12,8 @@ using System.Runtime.InteropServices;
 namespace Daz3D
 {
 
-    [ScriptedImporter(1, "dtu", 0x7FFFFFFF)]
-    public class Daz3DDTUImporter : ScriptedImporter
+    [UnityEditor.AssetImporters.ScriptedImporter(1, "dtu", 0x7FFFFFFF)]
+    public class Daz3DDTUImporter : UnityEditor.AssetImporters.ScriptedImporter
     {
         public static bool AutoImportDTUChanges = true;
         public static bool GenerateUnityPrefab = true;
@@ -101,8 +103,10 @@ namespace Daz3D
         /// This will probably be the first DTU Brudge code which is executed
         /// when the DTU Bridge is first installed into Unity.
         /// </summary>
-        public override void OnImportAsset(AssetImportContext ctx)
+        public override void OnImportAsset(UnityEditor.AssetImporters.AssetImportContext ctx)
         {
+            if (Daz3DBridge.BatchConversionMode != 0) return;
+
             if (AutoImportDTUChanges)
             {
                 var dtuPath = ctx.assetPath;
@@ -220,9 +224,11 @@ namespace Daz3D
             //DEBUG
             //Debug.LogError("dtuPath = [" + dtuPath + "] " + dtuPath.Length);
 
-            Daz3DBridge.ShowWindow();
-
-            Daz3DBridge.CurrentToolbarMode = Daz3DBridge.ToolbarMode.History; //force into history mode during import
+            if (Daz3DBridge.BatchConversionMode == 0)
+            {
+                Daz3DBridge.ShowWindow();
+                Daz3DBridge.CurrentToolbarMode = Daz3DBridge.ToolbarMode.History; //force into history mode during import
+            }
 
             Daz3DBridge.Progress = .03f;
                 yield return new WaitForEndOfFrame();
@@ -256,6 +262,7 @@ namespace Daz3D
                 Daz3DBridge.Progress = 0;
                 _map = null;
                 _dforceMap = null;
+                Daz3DBridge.ReadyToImport = true;
                 yield break;
             }
 
@@ -265,6 +272,7 @@ namespace Daz3D
                 Daz3DBridge.Progress = 0;
                 _map = null;
                 _dforceMap = null;
+                Daz3DBridge.ReadyToImport = true;
                 yield break;
             }
 
@@ -285,9 +293,13 @@ namespace Daz3D
             Daz3DBridge.Progress = 0;
 
             // DB 2021-09-02: Show DTUImport complete dialog
-            EditorUtility.DisplayDialog("DTU Bridge Import", "Import Completed for " + dtuPath, "OK");
+            if (Daz3DBridge.BatchConversionMode == 0)
+            {
+                EditorUtility.DisplayDialog("DTU Bridge Import", "Import Completed for " + dtuPath, "OK");
+                Daz3DBridge.AddDiffusionProfilePrompt();
+            }
 
-            Daz3DBridge.AddDiffusionProfilePrompt();
+            Daz3DBridge.ReadyToImport = true;
 
             yield break;
         }
@@ -386,7 +398,6 @@ namespace Daz3D
 
         //}
 
-
         
         public static IEnumerator ImportDTURoutine(string path, Action<DTU> dtuOut, float progressLimit)
         {
@@ -412,7 +423,8 @@ namespace Daz3D
             var dtuObject = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(path);
 
             record.AddToken("Imported DTU file: " + path);
-            record.AddToken(dtuObject.name, dtuObject, ENDLINE);
+            if (dtuObject != null)
+                record.AddToken(dtuObject.name, dtuObject, ENDLINE);
 
             //UnityEngine.Debug.Log("DTU: " + dtu.AssetName + " contains: " + dtu.Materials.Count + " materials");
 
@@ -441,15 +453,16 @@ namespace Daz3D
             }
             record.AddToken(" based on DTU file.", null, ENDLINE);
 
-
-            Daz3DBridge bridge = EditorWindow.GetWindow(typeof(Daz3DBridge)) as Daz3DBridge;
-            if (bridge == null)
+            if (Daz3DBridge.BatchConversionMode == 0)
             {
-                var consoleType = Type.GetType("ConsoleWindow,UnityEditor.dll");
-                bridge = EditorWindow.CreateWindow<Daz3DBridge>(new[] { consoleType });
+                Daz3DBridge bridge = EditorWindow.GetWindow(typeof(Daz3DBridge)) as Daz3DBridge;
+                if (bridge == null)
+                {
+                    var consoleType = Type.GetType("ConsoleWindow,UnityEditor.dll");
+                    bridge = EditorWindow.CreateWindow<Daz3DBridge>(new[] { consoleType });
+                }
+                bridge?.Focus();
             }
-
-            bridge?.Focus();
 
             //just a safeguard to keep the history data at a managable size (100 records)
             while (EventQueue.Count > 100)
@@ -499,13 +512,13 @@ namespace Daz3D
 
             if (fbxPrefab == null)
             {
-                Debug.LogWarning("no FBX model prefab found at " + fbxPath);
+                Debug.LogError("no FBX model prefab found at " + fbxPath);
                 return;
             }
 
             if (PrefabUtility.GetPrefabAssetType(fbxPrefab) != PrefabAssetType.Model)
             {
-                Debug.LogWarning(fbxPath + " is not a model prefab ");
+                Debug.LogError(fbxPath + " is not a model prefab ");
                 return;
             }
 
@@ -842,6 +855,7 @@ namespace Daz3D
             var component = workingInstance.AddComponent<Daz3DInstance>();
             component.SourceFBX = fbxPrefab;
 
+
             // Create the new Prefab.
             var prefab = PrefabUtility.SaveAsPrefabAssetAndConnect(workingInstance, nuPrefabPathPath, InteractionMode.AutomatedAction);
             Selection.activeGameObject = prefab;
@@ -884,7 +898,6 @@ namespace Daz3D
             if (foundCount > 0)
                 DestroyImmediate(workingInstance);
 
-
             ImportEventRecord pfbRecord = new ImportEventRecord();
             pfbRecord.AddToken("Created Unity Prefab: ");
             pfbRecord.AddToken(prefab.name, prefab);
@@ -892,8 +905,16 @@ namespace Daz3D
             pfbRecord.AddToken(resultingInstance.name, resultingInstance, ENDLINE);
             EventQueue.Enqueue(pfbRecord);
 
-            //highlight/select the object in the scene view
-            Selection.activeGameObject = resultingInstance;
+            if (Daz3DBridge.BatchConversionMode == 0)
+            {
+                //highlight/select the object in the scene view
+                Selection.activeGameObject = resultingInstance;
+            }
+            else if (Daz3DBridge.BatchConversionMode == 1)
+            { 
+                DestroyImmediate(resultingInstance);
+            }
+
         }
 
         private static void ImportDforceToPrefab(string key, Renderer renderer, GameObject workingInstance, Material keyMat)
@@ -913,20 +934,20 @@ namespace Daz3D
             )
             {
                 // TODO: implement dForce hair support
-                Debug.LogWarning("Unofficial DTU: ImportDforceToPrefab() dForce hair is currently not supported: " + parent.name);
+                Debug.LogWarning("Import Warning: ImportDforceToPrefab() dForce hair is currently not supported: " + parent.name);
                 return;
             }
 
             if (skinned == null)
             {
                 // TODO: check if regular mesh renderer and upgrade if appropriate
-                Debug.LogWarning("Unofficial DTU: ImportDforceToPrefab() gameojbect unsupported: it does not have a skinned mesh renderer: " + parent.name);
+                Debug.LogWarning("Import Warning: ImportDforceToPrefab() gameojbect unsupported: it does not have a skinned mesh renderer: " + parent.name);
                 return;
             }
             else if (skinned.sharedMesh.vertexCount > 40000)
             {
                 int numverts = skinned.sharedMesh.vertexCount;
-                Debug.LogWarning("Unofficial DTU: ImportDforceToPrefab() gameojbect unsupported: too many vertices: " + parent.name + " (" + numverts.ToString() + ")");
+                Debug.LogWarning("Import Warning: ImportDforceToPrefab() gameojbect unsupported: too many vertices: " + parent.name + " (" + numverts.ToString() + ")");
                 return;
 
             }
