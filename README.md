@@ -4,7 +4,7 @@ Unity Package for uDTU version 1.3 alpha 3
 
 This the Unity Package for Unofficial DTU Bridge, an unofficial update project for the opensource Daz To Unity Bridge released by Daz3D.  It contains a number of bugfixes and feature additions not yet incorporated in the official Daz To Unity project.
 
-**PLEASE NOTE**: This is only HALF of the full uDTU Bridge.  You must also install the [Daz Plugin](https://github.com/danielbui78/UDTU) part of the uDTU Bridge in order to have full functionallity of all features and bugfixes.
+**PLEASE NOTE**: This is only HALF of the full uDTU Bridge.  You must also install the [Daz Plugin](https://github.com/danielbui78/UDTU) part of the uDTU Bridge in order to have full functionallity of all features and bugfixes.  Additionally, this project is still in _alpha development_ stage.  As you will see, the Daz Plugin is not even at version 1.3 yet.  Once the Daz Plugin is updated to v1.3, there will be better integration and **better instuctional documentation** between this Unity Package and the Daz Plugin.  Thanks for your understanding.
 
 New in this version:
 ====================
