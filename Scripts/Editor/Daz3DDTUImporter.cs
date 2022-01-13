@@ -149,10 +149,10 @@ namespace Daz3D
                 Path = path;
             }
 
-            public void AddMaterial(UnityEngine.Material material)
+            public void AddMaterial(string key, UnityEngine.Material material)
             {
-                if (material && !Map.ContainsKey(material.name))
-                    Map.Add(material.name, material);
+                if (material && !Map.ContainsKey(key))
+                    Map.Add(key, material);
             }
             public string Path { get; set; }
             public Dictionary<string, UnityEngine.Material> Map = new Dictionary<string, UnityEngine.Material>();
@@ -282,7 +282,7 @@ namespace Daz3D
                 yield return new WaitForEndOfFrame();
 
             if (GenerateUnityPrefab)
-                GeneratePrefabFromFBX(fbxPath, platform);
+                GeneratePrefabFromFBX(fbxPath, platform, dtu);
 
             Daz3DBridge.Progress = 1f;
                 yield return new WaitForEndOfFrame();
@@ -440,9 +440,9 @@ namespace Daz3D
 
             for (int i = 0; i < dtu.Materials.Count; i++)
             {
-                var dtuMat = dtu.Materials[i];
+                DTUMaterial dtuMat = dtu.Materials[i];
                 var material = dtu.ConvertToUnity(dtuMat);
-                _map.AddMaterial(material);
+                _map.AddMaterial(dtuMat.MaterialName, material);
 
                 // DB (2021-05-25): DForce import
                 if (dtu.IsDTUMaterialDForceEnabled(dtuMat))
@@ -512,7 +512,7 @@ namespace Daz3D
             Torso
         }
 
-        public static void GeneratePrefabFromFBX(string fbxPath, DazFigurePlatform platform)
+        public static void GeneratePrefabFromFBX(string fbxPath, DazFigurePlatform platform, DTU dtu)
         {
             var fbxPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(fbxPath);
 
@@ -631,12 +631,13 @@ namespace Daz3D
 
             //remap the materials
             var workingInstance = Instantiate(fbxPrefab);
-            workingInstance.name = "Daz3d_" + fbxPrefab.name;
+            //workingInstance.name = "Daz3d_" + fbxPrefab.name;
+            workingInstance.name = dtu.ProductComponentName;
 
             var renderers = workingInstance.GetComponentsInChildren<Renderer>();
             if (renderers?.Length == 0)
             {
-                Debug.LogWarning("no renderers found for material remapping");
+                Debug.LogError("DazBridge: No renderers found for material remapping.");
                 return;
             }
 
@@ -787,6 +788,13 @@ namespace Daz3D
                             }
                             else
                             {
+                                Debug.LogError("DazBridge: No imported materials were found for material remapping");
+                                continue;
+
+                                /****
+                                 ** Everything below is old and broken.
+                                 ** Fbx exported from DazBridges no longer embed textures.
+                                 ****
                                 var shader = Shader.Find("HDRP/Lit");
 
                                 if (shader == null)
@@ -811,7 +819,7 @@ namespace Daz3D
 
                                 //Debug.Log("obj path " + path);
                                 AssetDatabase.CreateAsset(nuMat, matPath + "/Daz3D_" + keyMat.name + ".mat");
-
+                                */
                             }
 
                             dict.Add(keyMat, nuMat);
@@ -850,12 +858,23 @@ namespace Daz3D
             //write the prefab to the asset database
             // Make sure the file name is unique, in case an existing Prefab has the same name.
             var nuPrefabPathPath = Path.GetDirectoryName(modelPath);
-            nuPrefabPathPath = Path.Combine(nuPrefabPathPath, fbxPrefab.name + "_Prefab");
-            nuPrefabPathPath = AssetDatabase.GenerateUniqueAssetPath(nuPrefabPathPath);
+
+            //nuPrefabPathPath = Path.Combine(nuPrefabPathPath, fbxPrefab.name + "_Prefab");
+            //nuPrefabPathPath = AssetDatabase.GenerateUniqueAssetPath(nuPrefabPathPath);
+            //if (!Directory.Exists(nuPrefabPathPath))
+            //    Directory.CreateDirectory(nuPrefabPathPath);
+
+            nuPrefabPathPath = Path.Combine(nuPrefabPathPath, "Prefabs");
             if (!Directory.Exists(nuPrefabPathPath))
                 Directory.CreateDirectory(nuPrefabPathPath);
 
-            nuPrefabPathPath += "/Daz3D_" + fbxPrefab.name + ".prefab";
+            string prefabFilestem = fbxPrefab.name;
+            if (dtu.ProductComponentName != "")
+                prefabFilestem = Daz3D.Utilities.ScrubKey(dtu.ProductComponentName);
+            else if (dtu.AssetName != "")
+                prefabFilestem = Daz3D.Utilities.ScrubKey(dtu.AssetName);
+            nuPrefabPathPath += "/" + prefabFilestem + "_Prefab.prefab";
+            nuPrefabPathPath = AssetDatabase.GenerateUniqueAssetPath(nuPrefabPathPath);
 
             // For future refreshment
             var component = workingInstance.AddComponent<Daz3DInstance>();

@@ -2147,7 +2147,7 @@ namespace Daz3D
 			var materialPath = materialDir + "/" + Utilities.ScrubKey(dtuMaterial.MaterialName) + ".mat";
 			if (UseSharedMaterialDir)
             {
-				materialPath = materialDir + "/" + Utilities.ScrubKey(dtuMaterial.AssetName) + "_" + Utilities.ScrubKey(dtuMaterial.MaterialName) + ".mat";
+				materialPath = materialDir + "/" + Utilities.ScrubKey(dtuMaterial.ProductComponentName) + "_" + Utilities.ScrubKey(dtuMaterial.MaterialName) + ".mat";
 			}
 
 
@@ -2400,6 +2400,8 @@ namespace Daz3D
 	public struct DTUMaterial
 	{
 		public float Version;
+		public string ProductName;
+		public string ProductComponentName;
 		public string AssetName;
 		public string MaterialName;
 		public string MaterialType;
@@ -2589,12 +2591,9 @@ namespace Daz3D
 				var dtuMat = new DTUMaterial();
 
 				dtuMat.Version = mat["Version"].AsFloat;
-				if (dtu.ProductComponentName != "")
-					dtuMat.AssetName = dtu.ProductComponentName;
-				else if (dtu.ProductName != "")
-					dtuMat.AssetName = dtu.ProductName;
-				else
-					dtuMat.AssetName = mat["Asset Name"].Value;
+				dtuMat.ProductName = dtu.ProductName;
+				dtuMat.ProductComponentName = dtu.ProductComponentName;
+				dtuMat.AssetName = mat["Asset Name"].Value;
 				dtuMat.MaterialName = mat["Material Name"].Value;
 				dtuMat.MaterialType = mat["Material Type"].Value;
 				dtuMat.Value = mat["Value"].Value;
