@@ -90,6 +90,7 @@ namespace Daz3D
                         // copy FBX to local container
                         System.IO.File.Copy(fbxSourcePath, localPath + "/" + fbxFilename);
                         Debug.Log("FBX copied to: " + localPath + "/" + fbxFilename);
+                        AssetDatabase.Refresh();
                     }
 
                     // importDTU
@@ -107,6 +108,10 @@ namespace Daz3D
             Daz3DBridge.BatchConversionMode = -1;
             Debug.Log("Batch Conversions Complete.");
 //            yield break;
+
+            //////////////////////////////
+            // SAVE AND EXIT WHEN BATCHMODE
+            //////////////////////////////
             EditorApplication.SaveScene(EditorApplication.currentScene);
             EditorApplication.Exit(0);
         }
