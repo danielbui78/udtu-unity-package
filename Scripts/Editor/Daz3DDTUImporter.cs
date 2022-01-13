@@ -410,6 +410,12 @@ namespace Daz3D
 
             var dtu = DTUConverter.ParseDTUFile(path);
 
+            if (Daz3DBridge.BatchConversionMode == 1)
+            {
+                dtu.UseSharedMaterialDir = true;
+                dtu.UseSharedTextureDir = true;
+            }
+
             // DB (2021-05-15): skip DTU import if animation
             if (dtu.AssetType == "Animation")
             {
