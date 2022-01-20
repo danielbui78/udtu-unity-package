@@ -1,4 +1,4 @@
-Unity Package for uDTU version 1.3 alpha 3
+Unity Package for uDTU version 1.3 alpha 4
 ====================
 
 
@@ -8,11 +8,8 @@ This the Unity Package for Unofficial DTU Bridge, an unofficial update project f
 
 New in this version:
 ====================
-- The Unity Package is now separate from the Daz Studio Plugin.
-- You will need to delete any existing DTU plugin from "Assets/Daz3D" folder.  You can save your previous exported assets.
-- UseNewShaders is now enabled by default.
-- Added improved Hair shaders for HDRP and URP.
-- Alpha-value Bugfixes to Hair shaders: OOT, OmUberSurface.
+- Fixed assembly definition for Scripts/Editor folder.  Projects should now properly build.
+- Fixed error when importing with dForce Support enabled.
 
 
 Known Issues:

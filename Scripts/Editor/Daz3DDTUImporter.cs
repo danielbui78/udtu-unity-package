@@ -949,7 +949,7 @@ namespace Daz3D
                 GameObject collision_instance = (searchResult != null) ? searchResult.gameObject : null;
                 if (collision_instance == null)
                 {
-                    GameObject collision_prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Daz3D/Resources/G8F Collision Rig.prefab");
+                    GameObject collision_prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Packages/com.danielbui78.udtu/Resources/G8F Collision Rig.prefab");
                     collision_instance = Instantiate<GameObject>(collision_prefab);
                     collision_instance.name = "Cloth Collision Rig";
                     collision_instance.transform.parent = workingInstance.transform;

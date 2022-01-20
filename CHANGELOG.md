@@ -1,5 +1,12 @@
 Change Log:
 ===========
+Version 1.3 alpha 3:
+- The Unity Package is now separate from the Daz Studio Plugin.
+- You will need to delete any existing DTU plugin from "Assets/Daz3D" folder.  You can save your previous exported assets.
+- UseNewShaders is now enabled by default.
+- Added improved Hair shaders for HDRP and URP.
+- Alpha-value Bugfixes to Hair shaders: OOT, OmUberSurface.
+
 Version 1.3 alpha 1:
 - The Unity Package is now separated from the Daz Studio Plugin.
 
@@ -54,4 +61,3 @@ Version 0.3-alpha:
 
 Version 0.1-alpha:
 - Combined support for all three rendering pipelines and an autodetection/configuration system.
-

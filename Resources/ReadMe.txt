@@ -1,15 +1,15 @@
-Unofficial DTU Bridge, Unity Package version 1.3 alpha 3
+Unity Package for uDTU version 1.3 alpha 4
 ====================
+
 
 This the Unity Package for Unofficial DTU Bridge, an unofficial update project for the opensource Daz To Unity Bridge released by Daz3D.  It contains a number of bugfixes and feature additions not yet incorporated in the official Daz To Unity project.
 
+**PLEASE NOTE**: This is only HALF of the full uDTU Bridge.  You must also install the [Daz Plugin](https://github.com/danielbui78/UDTU) part of the uDTU Bridge in order to have full functionallity of all features and bugfixes.  Additionally, this project is still in _alpha development_ stage.  As you will see, the Daz Plugin is not even at version 1.3 yet.  Once the Daz Plugin is updated to v1.3, there will be better integration and **better instuctional documentation** between this Unity Package and the Daz Plugin.  Thanks for your understanding.
+
 New in this version:
 ====================
-- The Unity Package is now separate from the Daz Studio Plugin.
-- You will need to delete any existing DTU plugin from "Assets/Daz3D" folder.  You can save your previous exported assets.
-- UseNewShaders is now enabled by default.
-- Added improved Hair shaders for HDRP and URP.
-- Alpha-value Bugfixes to Hair shaders: OOT, OmUberSurface.
+- Fixed assembly definition for Scripts/Editor folder.  Projects should now properly build.
+- Fixed error when importing with dForce Support enabled.
 
 
 Known Issues:
@@ -96,6 +96,16 @@ Tips: if clothing falls off or explodes, try decreasing the Dynamics Strength in
 
 Change Log:
 ===========
+Version 1.3 alpha 3:
+- The Unity Package is now separate from the Daz Studio Plugin.
+- You will need to delete any existing DTU plugin from "Assets/Daz3D" folder.  You can save your previous exported assets.
+- UseNewShaders is now enabled by default.
+- Added improved Hair shaders for HDRP and URP.
+- Alpha-value Bugfixes to Hair shaders: OOT, OmUberSurface.
+
+Version 1.3 alpha 1:
+- The Unity Package is now separated from the Daz Studio Plugin.
+
 Version 1.2:
 - Bugfixed crash when exporting subdivisions for more than one figure in a single session.
 - Initial refactoring for planned open-source FBX and OpenSubdiv Daz-plugins.
