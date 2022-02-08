@@ -304,7 +304,7 @@ namespace Daz3D
 				mat.SetFloat("_TransparentZWrite",1f);
 				mat.SetFloat("_ZTestGBuffer",5f);
 				mat.SetFloat("_SurfaceType",0f);
-				mat.SetFloat("_AlphaCutoffEnable",0f);
+//				mat.SetFloat("_AlphaCutoffEnable",0f);
 				mat.SetFloat("_AlphaDstBlend",0f);
 				mat.SetFloat("_DstBlend",0f);
 
@@ -315,6 +315,9 @@ namespace Daz3D
 
 				mat.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Geometry + sortingPriority;
 			}
+			// 2022-Feb-04 (DB): AlphaCutoff enabled in both Transparent and Opaque surface types
+			mat.SetFloat("_AlphaCutoffEnable", 1f);
+//			mat.EnableKeyword("_ALPHATEST_ON");
 
 
 			mat.SetShaderPassEnabled("MOTIONVECTORS",false);
@@ -812,7 +815,8 @@ namespace Daz3D
 			{
 				//Hairs are pretty simple b/c we only care about a few properties, so we're forking here to deal with it
 				isDoubleSided = true;
-				isTransparent = true;
+				// 2022-Feb-04 (DB): hardcode from isTransparent=true back to isTransparent=false to fix zsorting problems with hair vs cap, etc
+				isTransparent = false;
 
 				mat.SetColor("_Diffuse",diffuseColor.Color);
 				mat.SetTexture("_DiffuseMap",ImportTextureFromPath(diffuseColor.Texture, textureDir, record));
@@ -1733,7 +1737,8 @@ namespace Daz3D
 			{
 				//Hairs are pretty simple b/c we only care about a few properties, so we're forking here to deal with it
 				isDoubleSided = true;
-				isTransparent = true;
+				// 2022-Feb-04 (DB): hardcode isTransparent=false to fix transparency z-sorting problems
+				isTransparent = false;
 
 				mat.SetColor("_Diffuse",diffuseColor.Color);
 				mat.SetTexture("_DiffuseMap",ImportTextureFromPath(diffuseColor.Texture, textureDir, record));
@@ -1856,6 +1861,7 @@ namespace Daz3D
 			return mat;
 
 		}
+
 		public Material ConvertToUnityBlendedDualLobeHair(DTUMaterial dtuMaterial, string textureDir)
 		{
 
@@ -2060,7 +2066,8 @@ namespace Daz3D
 
 
 			bool isDoubleSided = true;
-			bool isTransparent = true;
+			// 2022-Feb-04 (DB): hardcode isTransparent=false to fix transparency z-sort problems
+			bool isTransparent = false;
 
 
 
