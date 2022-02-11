@@ -183,13 +183,13 @@ namespace Daz3D
         {  
             _instance = (Daz3DBridge)GetWindow(typeof(Daz3DBridge));
 #if USING_HDRP
-            _instance.titleContent = new GUIContent("Batch-Converter");
+            _instance.titleContent = new GUIContent("Daz To Unity: HDRP");
 #elif USING_URP
-            _instance.titleContent = new GUIContent("uDTU: URP");
+            _instance.titleContent = new GUIContent("Daz To Unity: URP");
 #elif USING_BUILTIN
-            _instance.titleContent = new GUIContent("uDTU: Built-In Rendering");
+            _instance.titleContent = new GUIContent("Daz To Unity: Built-In Rendering");
 #else
-            _instance.titleContent = new GUIContent("uDTU: RenderPipeline Not Detected");
+            _instance.titleContent = new GUIContent("Daz To Unity: RenderPipeline Not Detected");
             CurrentToolbarMode = ToolbarMode.Options;            
 #endif
         }

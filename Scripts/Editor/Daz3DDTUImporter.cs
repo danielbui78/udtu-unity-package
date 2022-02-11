@@ -1,7 +1,7 @@
 ﻿#define USING_HDRP
 
 using UnityEditor;
-
+using UnityEditor.Experimental.AssetImporters;
 using System.Collections.Generic;
 using System;
 using System.Collections;
@@ -12,8 +12,8 @@ using System.Runtime.InteropServices;
 namespace Daz3D
 {
 
-    [UnityEditor.AssetImporters.ScriptedImporter(1, "dtu", 0x7FFFFFFF)]
-    public class Daz3DDTUImporter : UnityEditor.AssetImporters.ScriptedImporter
+    [ScriptedImporter(1, "dtu", 0x7FFFFFFF)]
+    public class Daz3DDTUImporter : ScriptedImporter
     {
         public static bool AutoImportDTUChanges = true;
         public static bool GenerateUnityPrefab = true;
@@ -103,7 +103,7 @@ namespace Daz3D
         /// This will probably be the first DTU Brudge code which is executed
         /// when the DTU Bridge is first installed into Unity.
         /// </summary>
-        public override void OnImportAsset(UnityEditor.AssetImporters.AssetImportContext ctx)
+        public override void OnImportAsset(AssetImportContext ctx)
         {
             if (Daz3DBridge.BatchConversionMode != 0) return;
 
@@ -632,7 +632,12 @@ namespace Daz3D
             //remap the materials
             var workingInstance = Instantiate(fbxPrefab);
             //workingInstance.name = "Daz3d_" + fbxPrefab.name;
-            workingInstance.name = dtu.ProductComponentName;
+            string workingPrefab_name = fbxPrefab.name;
+            if (dtu.ProductComponentName != "")
+                workingPrefab_name = dtu.ProductComponentName;
+            else if (dtu.AssetName != "")
+                workingPrefab_name = dtu.AssetName;
+            workingInstance.name = workingPrefab_name;
 
             var renderers = workingInstance.GetComponentsInChildren<Renderer>();
             if (renderers?.Length == 0)
