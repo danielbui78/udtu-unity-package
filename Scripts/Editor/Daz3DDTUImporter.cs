@@ -631,13 +631,12 @@ namespace Daz3D
 
             //remap the materials
             var workingInstance = Instantiate(fbxPrefab);
-            //workingInstance.name = "Daz3d_" + fbxPrefab.name;
-            string workingPrefab_name = fbxPrefab.name;
+            string workingInstance_name = fbxPrefab.name;
             if (dtu.ProductComponentName != "")
-                workingPrefab_name = dtu.ProductComponentName;
+                workingInstance_name = dtu.ProductComponentName;
             else if (dtu.AssetName != "")
-                workingPrefab_name = dtu.AssetName;
-            workingInstance.name = workingPrefab_name;
+                workingInstance_name = dtu.AssetName;
+            workingInstance.name = workingInstance_name;
 
             var renderers = workingInstance.GetComponentsInChildren<Renderer>();
             if (renderers?.Length == 0)
