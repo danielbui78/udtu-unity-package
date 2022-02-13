@@ -1924,7 +1924,8 @@ namespace Daz3D
 
 
 			bool isDoubleSided = true;
-			bool isTransparent = true;
+			// 2022-Feb-13 (DB): hardcode from isTransparent=true back to isTransparent=false to fix zsorting problems with hair vs cap, etc
+			bool isTransparent = false;
 
 			mat.SetColor("_Diffuse",diffuseColor.Color);
 			mat.SetTexture("_DiffuseMap",ImportTextureFromPath(diffuseColor.Texture, textureDir, record));
@@ -2060,7 +2061,8 @@ namespace Daz3D
 
 
 			bool isDoubleSided = true;
-			bool isTransparent = true;
+			// 2022-Feb-13 (DB): hardcode from isTransparent=true back to isTransparent=false to fix zsorting problems with hair vs cap, etc
+			bool isTransparent = false;
 
 			mat.SetColor("_Diffuse", diffuseColor.Color);
 			mat.SetTexture("_DiffuseMap", ImportTextureFromPath(diffuseColor.Texture, textureDir, record));
