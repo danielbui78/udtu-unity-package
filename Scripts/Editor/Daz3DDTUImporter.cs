@@ -442,7 +442,8 @@ namespace Daz3D
             {
                 DTUMaterial dtuMat = dtu.Materials[i];
                 var material = dtu.ConvertToUnity(dtuMat);
-                _map.AddMaterial(dtuMat.MaterialName, material);
+                var key = Utilities.ScrubKey(dtuMat.MaterialName);
+                _map.AddMaterial(key, material);
 
                 // DB (2021-05-25): DForce import
                 if (dtu.IsDTUMaterialDForceEnabled(dtuMat))
